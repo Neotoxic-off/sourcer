@@ -4,11 +4,17 @@ downloader()
 {
     source=0
     input="website"
+    save="link.txt"
+
     if [[ -z $1 ]]; then
         printf " ~> Target: "
         read target
     else
         target=$1
+    fi
+    
+    if [[ !-z $2 ]]; then
+        save=$2
     fi
 
     printf "\n==> Downloading Website\n"
@@ -20,8 +26,8 @@ downloader()
     while IFS= read -r line
     do
       if [[ $line == *"href="* || $line == *"src="* ]]; then
-          echo $line | grep -Eo 'src="[^\"]+"' | cut -d '"' -f 2  >> links.txt
-          echo $line | grep -Eo 'href="[^\"]+"' | cut -d '"' -f 2  >> links.txt
+          echo $line | grep -Eo 'src="[^\"]+"' | cut -d '"' -f 2  >> $save
+          echo $line | grep -Eo 'href="[^\"]+"' | cut -d '"' -f 2  >> $save
           source=$((source + 1))
       fi
     done < "$input"
@@ -32,4 +38,4 @@ downloader()
     rm website
 }
 
-downloader $1
+downloader $1 $2
