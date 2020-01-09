@@ -13,7 +13,7 @@ downloader()
         target=$1
     fi
     
-    if [[ !-z $2 ]]; then
+    if [[ ! -z $2 ]]; then
         save=$2
     fi
 
