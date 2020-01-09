@@ -1,0 +1,35 @@
+#!/bin/bash
+
+downloader()
+{
+    source=0
+    input="website"
+    if [[ -z $1 ]]; then
+        printf " ~> Target: "
+        read target
+    else
+        target=$1
+    fi
+
+    printf "\n==> Downloading Website\n"
+    wget $target -O website -q
+
+    printf "==> Starting read of the website\n"
+    printf " ~> Extracting\n"
+
+    while IFS= read -r line
+    do
+      if [[ $line == *"href="* || $line == *"src="* ]]; then
+          echo $line | grep -Eo 'src="[^\"]+"' | cut -d '"' -f 2  >> links.txt
+          echo $line | grep -Eo 'href="[^\"]+"' | cut -d '"' -f 2  >> links.txt
+          source=$((source + 1))
+      fi
+    done < "$input"
+    printf "\n[+] Sources founds: $source\n"
+    if [[ $source -lt 10 ]]; then
+        printf "==> There is maybe a login page\n"
+    fi
+    rm website
+}
+
+downloader $1
