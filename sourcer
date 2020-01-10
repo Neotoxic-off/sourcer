@@ -12,7 +12,7 @@ downloader()
     else
         target=$1
     fi
-    
+
     if [[ ! -z $2 ]]; then
         save=$2
     fi
@@ -25,17 +25,27 @@ downloader()
 
     while IFS= read -r line
     do
-      if [[ $line == *"href="* || $line == *"src="* ]]; then
-          echo $line | grep -Eo 'src="[^\"]+"' | cut -d '"' -f 2  >> $save
-          echo $line | grep -Eo 'href="[^\"]+"' | cut -d '"' -f 2  >> $save
-          source=$((source + 1))
-      fi
+        if [[ $line == *"href="* || $line == *"src="* ]]; then
+            echo $line | grep -Eo 'src="[^\"]+"' | cut -d '"' -f 2  >> tmp
+            echo $line | grep -Eo 'href="[^\"]+"' | cut -d '"' -f 2  >> tmp
+            source=$((source + 1))
+        fi
     done < "$input"
+    printf " ~> Converting sources\n"
+    while IFS= read -r line
+    do
+        if [[ $line == "/"* ]]; then
+            echo $target$line >> $save
+        else
+            echo $line >> $save
+        fi
+    done < "tmp"
     printf "\n==> $source sources have been saved into $save\n"
     if [[ $source -lt 10 ]]; then
         printf "==> There is maybe a login page\n"
     fi
     rm website
+    rm tmp
 }
 
 downloader $1 $2
